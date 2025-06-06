@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import os
 import time
 from pydantic import BaseModel
+from typing import List
+
 
 # Load environment variables
 load_dotenv()
@@ -14,10 +16,10 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 class ReviewExtraction(BaseModel):
-    sentiment: str
-    complaints: str
-    approval: str
-    feature_request: str
+    sentiments: List[str]
+    complaints: List[str]
+    approvals: List[str]
+    feature_requests: List[str]
 
 def analyze_text(text):
     """Analyze text using OpenAI API with structured output"""
@@ -29,10 +31,10 @@ def analyze_text(text):
             model="gpt-4o-mini",
             instructions="""Analyze the text and provide a structured analysis of opinions about the product. 
             Return a JSON object with the following fields:
-            - sentiment: Overall sentiment (positive/negative/neutral)
-            - complaints: Summary of any complaints or issues mentioned (leave empty if none)
-            - approval: Summary of any positive feedback or approvals (leave empty if none)
-            - feature_request: Summary of any feature requests or suggestions (leave empty if none)
+            - sentiments: List of sentiments (positive/negative/neutral)
+            - complaints: List of complaints or issues mentioned (leave empty if none)
+            - approvals: List of positive feedback or approvals (leave empty if none)
+            - feature_requests: List of feature requests or suggestions (leave empty if none)
             
             Only include fields that are present in the text. If a category is not mentioned, leave it as an empty string.
             Keep summaries concise and focused on the product-related content.""",
@@ -40,13 +42,7 @@ def analyze_text(text):
             input=f"{text}"
         )
         
-        # Parse the response as JSON
-        # try:
-        #     analysis = json.loads(response.output_text)
-        #     return analysis
-        # except json.JSONDecodeError:
-        #     print("Error: Could not parse AI response as JSON")
-        #     return None
+
         output = response.output_parsed
         # print(output)
         return output

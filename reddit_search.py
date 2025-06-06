@@ -32,7 +32,7 @@ def get_recent_posts(keyword, days=365):
     search_results = reddit.subreddit('all').search(
         query=keyword,
         sort='relevance',
-        time_filter='all'
+        time_filter='year'
     )
     
     return search_results
@@ -43,6 +43,9 @@ def get_comments(post):
     comments = []
     
     for comment in post.comments.list():
+        # Construct the permalink using the post's permalink and comment ID
+        comment_permalink = f"{post.permalink}{comment.id}/"
+        
         comment_data = {
             'author': str(comment.author),
             'body': comment.body,
@@ -51,7 +54,8 @@ def get_comments(post):
             'id': comment.id,
             'parent_id': comment.parent_id,
             'is_submitter': comment.is_submitter,
-            'depth': comment.depth
+            'depth': comment.depth,
+            'permalink': f"https://reddit.com{comment_permalink}"
         }
         comments.append(comment_data)
     
